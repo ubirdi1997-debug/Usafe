@@ -28,6 +28,26 @@ app = FastAPI()
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Security
+security = HTTPBearer()
+
+# Helper function to get current admin user
+async def get_current_admin(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token = credentials.credentials
+    payload = decode_access_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+    
+    username = payload.get("sub")
+    if username is None:
+        raise HTTPException(status_code=401, detail="Invalid authentication credentials")
+    
+    admin = await db.admins.find_one({"username": username}, {"_id": 0})
+    if admin is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    
+    return AdminUser(**admin)
+
 
 # Define Models
 class StatusCheck(BaseModel):
