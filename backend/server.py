@@ -89,6 +89,166 @@ async def get_status_checks():
     
     return status_checks
 
+# ========================================
+# Contact Form Routes
+# ========================================
+
+@api_router.post("/contact", response_model=ContactFormSubmission)
+async def submit_contact_form(form_data: ContactFormCreate, request: Request):
+    """Submit a contact form"""
+    submission_dict = form_data.model_dump()
+    submission_dict['ip_address'] = request.client.host
+    submission = ContactFormSubmission(**submission_dict)
+    
+    # Convert to dict and serialize datetime
+    doc = submission.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    
+    await db.contact_submissions.insert_one(doc)
+    logger.info(f"Contact form submitted: {submission.email}")
+    
+    return submission
+
+@api_router.get("/admin/contacts", response_model=List[ContactFormSubmission])
+async def get_all_contacts(
+    current_admin: AdminUser = Depends(get_current_admin),
+    status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100
+):
+    """Get all contact form submissions (Admin only)"""
+    query = {}
+    if status:
+        query['status'] = status
+    
+    contacts = await db.contact_submissions.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Convert ISO string timestamps back to datetime objects
+    for contact in contacts:
+        if isinstance(contact['created_at'], str):
+            contact['created_at'] = datetime.fromisoformat(contact['created_at'])
+    
+    return contacts
+
+@api_router.put("/admin/contacts/{contact_id}/status")
+async def update_contact_status(
+    contact_id: str,
+    status: str,
+    current_admin: AdminUser = Depends(get_current_admin)
+):
+    """Update contact form status (Admin only)"""
+    result = await db.contact_submissions.update_one(
+        {"id": contact_id},
+        {"$set": {"status": status}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    return {"message": "Status updated successfully"}
+
+@api_router.delete("/admin/contacts/{contact_id}")
+async def delete_contact(
+    contact_id: str,
+    current_admin: AdminUser = Depends(get_current_admin)
+):
+    """Delete a contact submission (Admin only)"""
+    result = await db.contact_submissions.delete_one({"id": contact_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    
+    return {"message": "Contact deleted successfully"}
+
+# ========================================
+# Admin Authentication Routes
+# ========================================
+
+@api_router.post("/admin/register")
+async def register_admin(username: str, email: str, password: str):
+    """Register a new admin (for initial setup only - disable in production)"""
+    # Check if admin already exists
+    existing_admin = await db.admins.find_one({"username": username})
+    if existing_admin:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    
+    # Create admin user
+    admin = AdminUser(
+        username=username,
+        email=email,
+        password_hash=get_password_hash(password)
+    )
+    
+    doc = admin.model_dump()
+    doc['created_at'] = doc['created_at'].isoformat()
+    if doc['last_login']:
+        doc['last_login'] = doc['last_login'].isoformat()
+    
+    await db.admins.insert_one(doc)
+    logger.info(f"Admin user created: {username}")
+    
+    return {"message": "Admin user created successfully"}
+
+@api_router.post("/admin/login", response_model=AdminResponse)
+async def login_admin(login_data: AdminLogin):
+    """Admin login"""
+    admin = await db.admins.find_one({"username": login_data.username}, {"_id": 0})
+    
+    if not admin:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not verify_password(login_data.password, admin['password_hash']):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    # Update last login
+    await db.admins.update_one(
+        {"username": login_data.username},
+        {"$set": {"last_login": datetime.utcnow().isoformat()}}
+    )
+    
+    # Create access token
+    access_token = create_access_token(data={"sub": admin['username']})
+    
+    return AdminResponse(
+        id=admin['id'],
+        username=admin['username'],
+        email=admin['email'],
+        token=access_token
+    )
+
+@api_router.get("/admin/me", response_model=AdminUser)
+async def get_current_admin_info(current_admin: AdminUser = Depends(get_current_admin)):
+    """Get current admin user info"""
+    return current_admin
+
+# ========================================
+# Admin Dashboard Routes
+# ========================================
+
+@api_router.get("/admin/stats", response_model=WebsiteStats)
+async def get_website_stats(current_admin: AdminUser = Depends(get_current_admin)):
+    """Get website statistics (Admin only)"""
+    total_contacts = await db.contact_submissions.count_documents({})
+    new_contacts = await db.contact_submissions.count_documents({"status": "new"})
+    read_contacts = await db.contact_submissions.count_documents({"status": "read"})
+    replied_contacts = await db.contact_submissions.count_documents({"status": "replied"})
+    
+    # Get recent 5 submissions
+    recent = await db.contact_submissions.find({}, {"_id": 0}).sort("created_at", -1).limit(5).to_list(5)
+    
+    # Convert timestamps
+    for contact in recent:
+        if isinstance(contact['created_at'], str):
+            contact['created_at'] = datetime.fromisoformat(contact['created_at'])
+    
+    return WebsiteStats(
+        total_contacts=total_contacts,
+        new_contacts=new_contacts,
+        read_contacts=read_contacts,
+        replied_contacts=replied_contacts,
+        recent_submissions=recent
+    )
+
 # Include the router in the main app
 app.include_router(api_router)
 
