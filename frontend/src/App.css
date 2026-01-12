@@ -320,7 +320,7 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .hero-stats {
@@ -598,7 +598,7 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 /* ========================================
@@ -632,6 +632,7 @@
 .footer-logo {
   height: 40px;
   object-fit: contain;
+  align-self: flex-start;
 }
 
 .footer-description {
@@ -703,6 +704,55 @@
 /* ========================================
    Responsive Design
    ======================================== */
+
+/* Mobile First - Buttons full width on mobile */
+@media (max-width: 767px) {
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .hero-buttons .btn-primary,
+  .hero-buttons .btn-secondary {
+    width: 100%;
+  }
+  
+  .cta-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .cta-buttons .btn-primary,
+  .cta-buttons .btn-secondary {
+    width: 100%;
+  }
+  
+  .btn-submit {
+    width: 100%;
+  }
+  
+  /* Legal service card buttons full width on mobile */
+  .legal-service-card .btn-secondary,
+  .legal-service-card .btn-primary {
+    width: 100%;
+  }
+  
+  /* Product action buttons full width on mobile */
+  .product-actions {
+    flex-direction: column;
+  }
+  
+  .product-actions .btn-primary,
+  .product-actions .btn-secondary {
+    width: 100%;
+  }
+}
 
 @media (min-width: 768px) {
   .desktop-nav {
@@ -1040,7 +1090,7 @@
   max-width: 1400px;
   margin: 0 auto;
   text-align: center;
-
+}
 
 /* ========================================
    Admin Pages
@@ -1207,8 +1257,6 @@
   color: var(--brand-primary);
 }
 
-}
-
 .why-choose-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1218,11 +1266,16 @@
 
 .why-choose-item {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .why-icon {
   color: var(--brand-primary);
   margin-bottom: 20px;
+  display: block;
 }
 
 .legal-services-section {
