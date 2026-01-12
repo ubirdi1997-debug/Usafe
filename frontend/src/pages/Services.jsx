@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { services } from '../data/mockData';
 import { ArrowRight, Smartphone, Globe, Layout, Palette, TrendingUp, Zap, FileText, Shield, Rocket, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -55,8 +56,18 @@ const servicesDetail = {
 };
 
 const Services = () => {
+  const siteUrl = 'https://usafe.in';
   return (
     <div className="dark-container">
+      <Helmet>
+        <title>Professional Services - Development, Marketing & Legal | uSafe</title>
+        <meta name="description" content="Comprehensive professional services from development to legal compliance. Mobile & web app development, website design, branding, SEO, automation, and company registration services." />
+        <meta property="og:title" content="Professional Services - Development, Marketing & Legal | uSafe" />
+        <meta property="og:description" content="Comprehensive professional services from development to legal compliance - everything your business needs to succeed." />
+        <meta property="og:url" content={`${siteUrl}/services`} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${siteUrl}/services`} />
+      </Helmet>
       {/* Hero Section */}
       <section className="page-hero">
         <div className="page-hero-content">

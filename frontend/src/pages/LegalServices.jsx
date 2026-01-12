@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { FileText, Shield, CheckCircle2, ArrowRight, ExternalLink, Building2, FileCheck, Briefcase, Scale } from 'lucide-react';
 
 const legalServices = [
@@ -89,8 +90,18 @@ const legalServices = [
 ];
 
 const LegalServices = () => {
+  const siteUrl = 'https://usafe.in';
   return (
     <div className="dark-container">
+      <Helmet>
+        <title>uSafe Legal Services - Company Registration & Compliance | uSafe</title>
+        <meta name="description" content="Complete legal support for startups and small businesses - company registration, compliance filings, trademark & IP, business licenses, legal agreements, and consultation services." />
+        <meta property="og:title" content="uSafe Legal Services - Company Registration & Compliance" />
+        <meta property="og:description" content="Complete legal support for startups and small businesses - from company registration to ongoing compliance." />
+        <meta property="og:url" content={`${siteUrl}/legal-services`} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${siteUrl}/legal-services`} />
+      </Helmet>
       {/* Hero Section */}
       <section className="page-hero legal-hero">
         <div className="page-hero-content">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import Spline from '@splinetool/react-spline';
 import { products, services } from '../data/mockData';
 import { ArrowRight, Shield, Lock, Award, CheckCircle2, Smartphone, Globe, Layout, Palette, TrendingUp, Zap, FileText, Rocket } from 'lucide-react';
@@ -17,8 +18,22 @@ const iconMap = {
 };
 
 const Home = () => {
+  const siteUrl = 'https://usafe.in';
   return (
     <div className="dark-container">
+      <Helmet>
+        <title>uSafe - Secure Digital Solutions for Modern Businesses | Urbanesafe LLP</title>
+        <meta name="description" content="Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services for small businesses, startups, and professionals." />
+        <meta property="og:title" content="uSafe - Secure Digital Solutions for Modern Businesses" />
+        <meta property="og:description" content="Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services for small businesses, startups, and professionals." />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="uSafe" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="uSafe - Secure Digital Solutions for Modern Businesses" />
+        <meta name="twitter:description" content="Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services." />
+        <link rel="canonical" href={siteUrl} />
+      </Helmet>
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">

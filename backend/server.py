@@ -10,6 +10,9 @@ from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import aiosmtplib
 from models import ContactFormCreate, ContactFormSubmission, AdminLogin, AdminResponse, WebsiteStats, AdminUser
 from auth import verify_password, get_password_hash, create_access_token, decode_access_token
 
@@ -93,6 +96,73 @@ async def get_status_checks():
 # Contact Form Routes
 # ========================================
 
+async def send_email_via_mailtrap(name: str, email: str, message: str, subject: str, phone: Optional[str] = None):
+    """Send email using Mailtrap SMTP"""
+    try:
+        # Get Mailtrap credentials from environment variables
+        mailtrap_token = os.environ.get('MAILTRAP_TOKEN', '78e9eb4ea2073696b6201f6c49538f59')
+        mailtrap_host = os.environ.get('MAILTRAP_HOST', 'smtp.mailtrap.io')
+        mailtrap_port = int(os.environ.get('MAILTRAP_PORT', '2525'))
+        mailtrap_user = os.environ.get('MAILTRAP_USER', '')
+        mailtrap_password = os.environ.get('MAILTRAP_PASSWORD', '')
+        
+        # For Mailtrap, we can use token-based auth or SMTP credentials
+        # Using SMTP credentials approach
+        sender_email = os.environ.get('MAILTRAP_SENDER_EMAIL', 'hello@demomailtrap.co')
+        sender_name = os.environ.get('MAILTRAP_SENDER_NAME', 'Mailtrap Test')
+        recipient_email = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'admin@usafe.in')
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = f"{sender_name} <{sender_email}>"
+        msg['To'] = recipient_email
+        msg['Subject'] = f"Contact Form: {subject}"
+        
+        # Create email body
+        body = f"""
+New Contact Form Submission
+
+Name: {name}
+Email: {email}
+Phone: {phone if phone else 'Not provided'}
+Subject: {subject}
+
+Message:
+{message}
+"""
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Send email
+        # For Mailtrap, if using token, we need to use API, but for SMTP we use credentials
+        # Using SMTP with username/password (Mailtrap provides these in their dashboard)
+        if mailtrap_user and mailtrap_password:
+            await aiosmtplib.send(
+                msg,
+                hostname=mailtrap_host,
+                port=mailtrap_port,
+                username=mailtrap_user,
+                password=mailtrap_password,
+                use_tls=True
+            )
+        else:
+            # Fallback: Try with token as password (some Mailtrap setups work this way)
+            await aiosmtplib.send(
+                msg,
+                hostname=mailtrap_host,
+                port=mailtrap_port,
+                username=mailtrap_token,
+                password=mailtrap_token,
+                use_tls=True
+            )
+        
+        logger.info(f"Email sent successfully to {recipient_email}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send email: {str(e)}")
+        # Don't raise exception - we still want to save the submission
+        return False
+
 @api_router.post("/contact", response_model=ContactFormSubmission)
 async def submit_contact_form(form_data: ContactFormCreate, request: Request):
     """Submit a contact form"""
@@ -104,8 +174,21 @@ async def submit_contact_form(form_data: ContactFormCreate, request: Request):
     doc = submission.model_dump()
     doc['created_at'] = doc['created_at'].isoformat()
     
+    # Save to database
     await db.contact_submissions.insert_one(doc)
     logger.info(f"Contact form submitted: {submission.email}")
+    
+    # Send email
+    email_sent = await send_email_via_mailtrap(
+        name=submission.name,
+        email=submission.email,
+        message=submission.message,
+        subject=submission.subject,
+        phone=submission.phone
+    )
+    
+    if not email_sent:
+        logger.warning(f"Email sending failed for submission {submission.id}, but submission was saved")
     
     return submission
 

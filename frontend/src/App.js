@@ -1,6 +1,7 @@
 import "./App.css";
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster } from "./components/ui/sonner";
 import { AdminProvider } from "./context/AdminContext";
 import Header from "./components/Header";
@@ -16,25 +17,27 @@ import AdminLogin from "./pages/AdminLogin";
 
 function App() {
   return (
-    <div className="App">
-      <AdminProvider>
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/legal-services" element={<LegalServices />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-          </Routes>
-          <Footer />
-          <WhatsAppButton />
-          <Toaster position="top-right" />
-        </BrowserRouter>
-      </AdminProvider>
-    </div>
+    <HelmetProvider>
+      <div className="App">
+        <AdminProvider>
+          <BrowserRouter>
+            <Header />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/legal-services" element={<LegalServices />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/admin/login" element={<AdminLogin />} />
+            </Routes>
+            <Footer />
+            <WhatsAppButton />
+            <Toaster position="top-right" />
+          </BrowserRouter>
+        </AdminProvider>
+      </div>
+    </HelmetProvider>
   );
 }
 

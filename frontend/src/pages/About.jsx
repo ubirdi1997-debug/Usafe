@@ -1,11 +1,22 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Shield, Target, Award, Users, Zap, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 const About = () => {
+  const siteUrl = 'https://usafe.in';
   return (
     <div className="dark-container">
+      <Helmet>
+        <title>About Us - Urbanesafe LLP | uSafe</title>
+        <meta name="description" content="Learn about Urbanesafe LLP - building secure, reliable digital solutions for small businesses, startups, and professionals. Security-first approach, trust, and quality excellence." />
+        <meta property="og:title" content="About Us - Urbanesafe LLP | uSafe" />
+        <meta property="og:description" content="Learn about Urbanesafe LLP - building secure, reliable digital solutions for small businesses, startups, and professionals." />
+        <meta property="og:url" content={`${siteUrl}/about`} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${siteUrl}/about`} />
+      </Helmet>
       {/* Hero Section */}
       <section className="page-hero">
         <div className="page-hero-content">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -23,8 +24,40 @@ const Contact = () => {
     });
   };
 
+  const validateForm = () => {
+    if (!formData.name.trim()) {
+      toast.error('Please enter your name');
+      return false;
+    }
+    if (!formData.email.trim()) {
+      toast.error('Please enter your email address');
+      return false;
+    }
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+    if (!formData.subject.trim()) {
+      toast.error('Please enter a subject');
+      return false;
+    }
+    if (!formData.message.trim()) {
+      toast.error('Please enter your message');
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+    
     setLoading(true);
 
     try {
@@ -39,14 +72,28 @@ const Contact = () => {
       });
     } catch (error) {
       console.error('Error submitting form:', error);
-      toast.error('Failed to send message. Please try again.');
+      if (error.response && error.response.data && error.response.data.detail) {
+        toast.error(`Failed to send message: ${error.response.data.detail}`);
+      } else {
+        toast.error('Failed to send message. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
   };
 
+  const siteUrl = 'https://usafe.in';
   return (
     <div className="dark-container">
+      <Helmet>
+        <title>Contact Us - Get In Touch | uSafe</title>
+        <meta name="description" content="Have a question or ready to start your project? Contact Urbanesafe LLP through email, WhatsApp, or our contact form. We typically respond within 24 hours." />
+        <meta property="og:title" content="Contact Us - Get In Touch | uSafe" />
+        <meta property="og:description" content="Have a question or ready to start your project? Contact Urbanesafe LLP through email, WhatsApp, or our contact form." />
+        <meta property="og:url" content={`${siteUrl}/contact`} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${siteUrl}/contact`} />
+      </Helmet>
       {/* Hero Section */}
       <section className="page-hero">
         <div className="page-hero-content">

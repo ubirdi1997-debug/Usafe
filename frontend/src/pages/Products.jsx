@@ -1,11 +1,22 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import { products } from '../data/mockData';
 import { CheckCircle2, ArrowRight, Download, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Products = () => {
+  const siteUrl = 'https://usafe.in';
   return (
     <div className="dark-container">
+      <Helmet>
+        <title>uSafe Product Ecosystem - Security-First Applications | uSafe</title>
+        <meta name="description" content="Explore the uSafe product ecosystem - a comprehensive suite of security-first applications including authenticator apps, cloud storage, business tools, and communication platforms." />
+        <meta property="og:title" content="uSafe Product Ecosystem - Security-First Applications" />
+        <meta property="og:description" content="Explore the uSafe product ecosystem - a comprehensive suite of security-first applications designed to protect and empower your digital life." />
+        <meta property="og:url" content={`${siteUrl}/products`} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={`${siteUrl}/products`} />
+      </Helmet>
       {/* Hero Section */}
       <section className="page-hero">
         <div className="page-hero-content">
