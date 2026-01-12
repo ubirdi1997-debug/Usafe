@@ -7,6 +7,7 @@ import { AdminProvider } from "./context/AdminContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Services from "./pages/Services";
@@ -21,6 +22,7 @@ function App() {
       <div className="App">
         <AdminProvider>
           <BrowserRouter>
+            <ScrollToTop />
             <Header />
             <Routes>
               <Route path="/" element={<Home />} />
