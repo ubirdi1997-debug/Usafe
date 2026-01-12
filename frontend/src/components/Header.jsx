@@ -40,6 +40,9 @@ const Header = () => {
             {link.label}
           </Link>
         ))}
+        <button onClick={handleLoginClick} className="btn-login">
+          Login
+        </button>
       </nav>
 
       {/* Mobile Menu Button */}
