@@ -15,6 +15,10 @@ const Header = () => {
     { path: '/contact', label: 'Contact' }
   ];
 
+  const handleLoginClick = () => {
+    window.open('https://crm.usafe.in', '_blank');
+  };
+
   return (
     <header className="dark-header">
       <Link to="/" className="logo-container">
