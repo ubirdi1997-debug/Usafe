@@ -10,6 +10,10 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
+import ProductUSafeOne from "./pages/ProductUSafeOne";
+import ProductUSafeChat from "./pages/ProductUSafeChat";
+import ProductUSafeCloud from "./pages/ProductUSafeCloud";
+import ProductUSafeLegal from "./pages/ProductUSafeLegal";
 import Services from "./pages/Services";
 import LegalServices from "./pages/LegalServices";
 import About from "./pages/About";
@@ -27,6 +31,10 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/products/usafe-one" element={<ProductUSafeOne />} />
+              <Route path="/products/usafe-chat" element={<ProductUSafeChat />} />
+              <Route path="/products/usafe-cloud" element={<ProductUSafeCloud />} />
+              <Route path="/products/usafe-legal" element={<ProductUSafeLegal />} />
               <Route path="/services" element={<Services />} />
               <Route path="/legal-services" element={<LegalServices />} />
               <Route path="/about" element={<About />} />

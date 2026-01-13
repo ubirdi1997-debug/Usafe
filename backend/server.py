@@ -99,17 +99,15 @@ async def get_status_checks():
 async def send_email_via_mailtrap(name: str, email: str, message: str, subject: str, phone: Optional[str] = None):
     """Send email using Mailtrap SMTP"""
     try:
-        # Get Mailtrap credentials from environment variables
-        mailtrap_token = os.environ.get('MAILTRAP_TOKEN', '78e9eb4ea2073696b6201f6c49538f59')
-        mailtrap_host = os.environ.get('MAILTRAP_HOST', 'smtp.mailtrap.io')
-        mailtrap_port = int(os.environ.get('MAILTRAP_PORT', '2525'))
-        mailtrap_user = os.environ.get('MAILTRAP_USER', '')
-        mailtrap_password = os.environ.get('MAILTRAP_PASSWORD', '')
+        # Get Mailtrap credentials from environment variables with defaults
+        mailtrap_host = os.environ.get('MAILTRAP_HOST', 'live.smtp.mailtrap.io')
+        mailtrap_port = int(os.environ.get('MAILTRAP_PORT', '587'))
+        mailtrap_user = os.environ.get('MAILTRAP_USER', 'api')
+        mailtrap_password = os.environ.get('MAILTRAP_PASSWORD', '78e9eb4ea2073696b6201f6c49538f59')
         
-        # For Mailtrap, we can use token-based auth or SMTP credentials
-        # Using SMTP credentials approach
+        # Get sender and recipient from environment variables
         sender_email = os.environ.get('MAILTRAP_SENDER_EMAIL', 'hello@demomailtrap.co')
-        sender_name = os.environ.get('MAILTRAP_SENDER_NAME', 'Mailtrap Test')
+        sender_name = os.environ.get('MAILTRAP_SENDER_NAME', 'uSafe Contact Form')
         recipient_email = os.environ.get('CONTACT_RECIPIENT_EMAIL', 'admin@usafe.in')
         
         # Create message
@@ -133,28 +131,15 @@ Message:
         
         msg.attach(MIMEText(body, 'plain'))
         
-        # Send email
-        # For Mailtrap, if using token, we need to use API, but for SMTP we use credentials
-        # Using SMTP with username/password (Mailtrap provides these in their dashboard)
-        if mailtrap_user and mailtrap_password:
-            await aiosmtplib.send(
-                msg,
-                hostname=mailtrap_host,
-                port=mailtrap_port,
-                username=mailtrap_user,
-                password=mailtrap_password,
-                use_tls=True
-            )
-        else:
-            # Fallback: Try with token as password (some Mailtrap setups work this way)
-            await aiosmtplib.send(
-                msg,
-                hostname=mailtrap_host,
-                port=mailtrap_port,
-                username=mailtrap_token,
-                password=mailtrap_token,
-                use_tls=True
-            )
+        # Send email using Mailtrap SMTP
+        await aiosmtplib.send(
+            msg,
+            hostname=mailtrap_host,
+            port=mailtrap_port,
+            username=mailtrap_user,
+            password=mailtrap_password,
+            use_tls=True
+        )
         
         logger.info(f"Email sent successfully to {recipient_email}")
         return True

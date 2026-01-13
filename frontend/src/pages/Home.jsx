@@ -18,34 +18,66 @@ const iconMap = {
 };
 
 const Home = () => {
-  const siteUrl = 'https://usafe.in';
+  const siteUrl = 'https://www.usafe.in';
+  const homepageUrl = `${siteUrl}/`;
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Urbanesafe LLP",
+    "url": siteUrl,
+    "logo": `${siteUrl}/logo.png`,
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+917696313676",
+      "contactType": "Customer Service",
+      "email": "admin@usafe.in"
+    }
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "uSafe",
+    "url": siteUrl,
+    "publisher": {
+      "@type": "Organization",
+      "name": "Urbanesafe LLP"
+    }
+  };
+
   return (
     <div className="dark-container">
       <Helmet>
-        <title>uSafe - Secure Digital Solutions for Modern Businesses | Urbanesafe LLP</title>
-        <meta name="description" content="Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services for small businesses, startups, and professionals." />
-        <meta property="og:title" content="uSafe - Secure Digital Solutions for Modern Businesses" />
-        <meta property="og:description" content="Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services for small businesses, startups, and professionals." />
-        <meta property="og:url" content={siteUrl} />
+        <title>Digital Business Solutions for Modern Businesses | uSafe</title>
+        <meta name="description" content="uSafe by Urbanesafe LLP delivers privacy-first digital business solutions and secure digital products for modern startups and enterprises." />
+        <meta property="og:title" content="Digital Business Solutions for Modern Businesses | uSafe" />
+        <meta property="og:description" content="uSafe by Urbanesafe LLP delivers privacy-first digital business solutions and secure digital products for modern startups and enterprises." />
+        <meta property="og:url" content={homepageUrl} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="uSafe" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="uSafe - Secure Digital Solutions for Modern Businesses" />
-        <meta name="twitter:description" content="Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services." />
-        <link rel="canonical" href={siteUrl} />
+        <meta name="twitter:title" content="Digital Business Solutions for Modern Businesses | uSafe" />
+        <meta name="twitter:description" content="uSafe by Urbanesafe LLP delivers privacy-first digital business solutions and secure digital products for modern startups and enterprises." />
+        <link rel="canonical" href={homepageUrl} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }} />
       </Helmet>
       {/* Hero Section */}
       <section className="hero-section">
         <div className="hero-content">
           <div className="hero-left">
             <h1 className="display-huge">
-              Secure Digital Solutions for Modern Businesses
+              Digital Business Solutions Built for Privacy, Security, and Scale
             </h1>
             <p className="body-large hero-description">
-              Urbanesafe LLP builds security-first applications, websites, and provides comprehensive marketing and legal services for small businesses, startups, and professionals.
+              uSafe by Urbanesafe LLP delivers privacy-first digital business solutions and secure digital products designed for modern startups and enterprises. Our technology solutions prioritize security, privacy, and scalability without compromising on performance.
+            </p>
+            <p className="body-large hero-description" style={{ marginTop: '20px' }}>
+              From secure authentication apps to cloud backup solutions, we build digital tools that help businesses operate with confidence in an increasingly connected world.
             </p>
             <div className="hero-buttons">
-              <Link to="/products" className="btn-primary">
+              <Link to="/products/usafe-one" className="btn-primary">
                 Explore Products
                 <ArrowRight size={20} />
               </Link>
@@ -78,12 +110,12 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Products Ecosystem Section */}
+      {/* Secure Digital Products Section */}
       <section className="products-section">
         <div className="section-header">
-          <h2 className="display-large">uSafe Ecosystem</h2>
+          <h2 className="display-large">Secure Digital Products for Modern Businesses</h2>
           <p className="body-medium section-description">
-            A comprehensive suite of security-first applications and services designed for modern businesses
+            Explore our suite of <Link to="/products" style={{ color: 'var(--brand-primary)', textDecoration: 'none' }}>privacy-first digital products</Link> designed to protect and empower your business operations.
           </p>
         </div>
         <div className="products-grid">
@@ -109,23 +141,28 @@ const Home = () => {
                   </li>
                 ))}
               </ul>
-              {product.status === 'live' && (
-                <button className="btn-primary btn-small">
+              {product.status === 'live' ? (
+                <Link to={`/products/${product.id}`} className="btn-primary btn-small">
                   Learn More
                   <ArrowRight size={16} />
-                </button>
+                </Link>
+              ) : (
+                <Link to={`/products/${product.id}`} className="btn-secondary btn-small">
+                  Learn More
+                  <ArrowRight size={16} />
+                </Link>
               )}
             </div>
           ))}
         </div>
       </section>
 
-      {/* Services Section */}
+      {/* Privacy-First Technology Section */}
       <section className="services-section">
         <div className="section-header">
-          <h2 className="display-large">Professional Services</h2>
+          <h2 className="display-large">Privacy-First Technology by Design</h2>
           <p className="body-medium section-description">
-            Comprehensive solutions from development to legal compliance
+            Every solution we build prioritizes privacy and security from the ground up, ensuring your business data remains protected and under your control.
           </p>
         </div>
         <div className="services-grid">
@@ -150,11 +187,15 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Trust Section */}
+      {/* uSafe Product Ecosystem Section */}
       <section className="trust-section">
         <div className="trust-content">
           <div className="trust-left">
-            <h2 className="display-medium">Built on Trust, Security, and Reliability</h2>
+            <h2 className="display-medium">uSafe Product Ecosystem</h2>
+            <p className="body-large" style={{ marginTop: '20px', marginBottom: '20px' }}>
+              Our <Link to="/products" style={{ color: 'var(--brand-primary)', textDecoration: 'none' }}>secure digital products</Link> include <Link to="/products/usafe-one" style={{ color: 'var(--brand-primary)', textDecoration: 'none' }}>privacy-first authentication apps</Link>, encrypted messaging, secure cloud backup, and business tools designed for modern enterprises.
+            </p>
+            <h2 className="display-medium" style={{ marginTop: '40px' }}>Why Businesses Choose uSafe</h2>
             <p className="body-large">
               At Urbanesafe LLP, we prioritize security and privacy in every solution we build. Our mission is to provide secure, reliable digital solutions that help small businesses and startups grow with confidence.
             </p>
@@ -189,6 +230,21 @@ const Home = () => {
                 <p className="body-large">Trusted by Businesses</p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Built by Urbanesafe LLP Section */}
+      <section className="products-detail-section">
+        <div className="product-detail-card">
+          <div className="product-detail-content">
+            <h2 className="display-medium">Built by Urbanesafe LLP</h2>
+            <p className="body-large product-detail-description">
+              Urbanesafe LLP specializes in building privacy-first digital business solutions and secure technology products. Our team combines expertise in security, privacy engineering, and business technology to deliver solutions that scale with your business.
+            </p>
+            <p className="body-large product-detail-description">
+              Whether you're a startup looking for secure authentication tools or an enterprise needing privacy-focused cloud solutions, we build digital products that protect your data while enabling growth.
+            </p>
           </div>
         </div>
       </section>

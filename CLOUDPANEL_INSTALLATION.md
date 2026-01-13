@@ -74,17 +74,16 @@ This guide will help you install the uSafe website on CloudPanel.
    CORS_ORIGINS=https://usafe.in,https://www.usafe.in
 
    # Mailtrap Configuration (for contact form emails)
-   MAILTRAP_TOKEN=78e9eb4ea2073696b6201f6c49538f59
-   MAILTRAP_HOST=smtp.mailtrap.io
-   MAILTRAP_PORT=2525
-   MAILTRAP_USER=your_mailtrap_username
-   MAILTRAP_PASSWORD=your_mailtrap_password
+   MAILTRAP_HOST=live.smtp.mailtrap.io
+   MAILTRAP_PORT=587
+   MAILTRAP_USER=api
+   MAILTRAP_PASSWORD=78e9eb4ea2073696b6201f6c49538f59
    MAILTRAP_SENDER_EMAIL=hello@demomailtrap.co
-   MAILTRAP_SENDER_NAME=Mailtrap Test
+   MAILTRAP_SENDER_NAME=uSafe Contact Form
    CONTACT_RECIPIENT_EMAIL=admin@usafe.in
    ```
 
-   **Note:** Replace Mailtrap credentials with your actual Mailtrap account credentials from https://mailtrap.io
+   **Note:** The Mailtrap SMTP credentials are configured above. Update `MAILTRAP_SENDER_EMAIL` and `CONTACT_RECIPIENT_EMAIL` as needed.
 
 ### Frontend Environment Variables
 
@@ -128,8 +127,31 @@ This guide will help you install the uSafe website on CloudPanel.
    /root/Usafe/frontend/build
    ```
 
-3. Enable **"Force HTTPS"** if you have SSL certificate
-4. Save the settings
+3. **Configure Nginx for SPA Routing** (IMPORTANT - Prevents 404 errors on direct route access):
+   - Go to your site's **"Nginx"** or **"Custom Config"** section in CloudPanel
+   - Add the following configuration:
+   ```nginx
+   location / {
+       try_files $uri $uri/ /index.html;
+       
+       # Cache static assets
+       location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+           expires 1y;
+           add_header Cache-Control "public, immutable";
+       }
+       
+       # Don't cache HTML files
+       location ~* \.html$ {
+           expires -1;
+           add_header Cache-Control "no-cache, no-store, must-revalidate";
+       }
+   }
+   ```
+   - This configuration ensures that all routes (like `/products`, `/services`, etc.) are handled by React Router
+   - Without this, direct access to routes will result in 404 errors
+
+4. Enable **"Force HTTPS"** if you have SSL certificate
+5. Save the settings
 
 ## Step 6: Set Up Backend API (Using CloudPanel Node.js App or Systemd)
 
@@ -289,6 +311,15 @@ Repeat for your API subdomain if using one.
 - Check that the build directory exists and has files
 - Verify document root in CloudPanel is correct
 - Check Nginx error logs: `tail -f /var/log/nginx/error.log`
+
+### 404 errors when accessing routes directly (e.g., /products, /services):
+- **This is the most common issue with React SPAs**
+- Make sure you've added the Nginx SPA configuration (see Step 5)
+- The `try_files $uri $uri/ /index.html;` directive is essential
+- Verify the Nginx configuration was saved and Nginx was reloaded
+- Check Nginx configuration: `sudo nginx -t`
+- Reload Nginx: `sudo systemctl reload nginx`
+- The Nginx config should be in your site's custom configuration section
 
 ### Backend not responding:
 - Check if the service is running: `sudo systemctl status usafe-backend`

@@ -52,18 +52,18 @@ const Products = () => {
                 </ul>
               </div>
 
-              {product.status === 'live' && (
-                <div className="product-actions">
+              <div className="product-actions">
+                {product.status === 'live' && (
                   <button className="btn-primary">
                     <Download size={20} />
                     Download App
                   </button>
-                  <button className="btn-secondary">
-                    Learn More
-                    <ArrowRight size={20} />
-                  </button>
-                </div>
-              )}
+                )}
+                <Link to={`/products/${product.id}`} className="btn-secondary">
+                  Learn More
+                  <ArrowRight size={20} />
+                </Link>
+              </div>
             </div>
             
             <div className="product-detail-visual">

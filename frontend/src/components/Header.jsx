@@ -23,7 +23,7 @@ const Header = () => {
     <header className="dark-header">
       <Link to="/" className="logo-container" onClick={() => setMobileMenuOpen(false)}>
         <img 
-          src="https://customer-assets.emergentagent.com/job_17c03c47-4240-49cd-8b07-32bdaf64363e/artifacts/9i1wxrfk_urbanesafe_it-removebg-preview.png" 
+          src="/logo.png" 
           alt="uSafe Logo" 
           className="dark-logo"
         />
